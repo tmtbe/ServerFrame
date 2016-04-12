@@ -1,5 +1,5 @@
 # ServerFrame
-基于workerman框架的帧扩展  
+基于workerman框架的帧扩展  实现的例子：http://114.55.55.197:9393  
 依赖php workerman框架 https://github.com/walkor/Workerman  
 配合GatewayWorker框架使用起来更加方便 https://github.com/walkor/gatewayworker  
 ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/walkor/channel  
