@@ -53,3 +53,58 @@ ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/wal
   pushToMessage()插入消息列表，内部维护一个消息列表，reload不会丢失  
   shiftFromMessage()取出消息  
   shiftAllFromMessage()取出所有消息  
+  parent获取父FrameChild对象  
+  
+  以下是FrameChild使用时的注意事项  
+  1.继承FrameChild时构造函数不允许传参数  
+  2.对象从对象池中获取，请使用FrameChild::getFromPool($class),$class填写包含命名空间的完整类名  
+  3.尽量使用FrameChild::getFromPool方式创建FrameChild对象，他会在destory后自动回收，循环利用
+  4.由于workerman有reload机制，正常状态下重启worker加载新的代码，新的进程会使你丢失所有运行时的数据，使用FrameChild的约束，会自动帮你存储数据，恢复数据，重建所有的FrameChild树。  
+    使用FrameChild的__set()和__get()魔术方法，当你需要传进一个变量时$frameChild->count = 10;  
+    当你需要取得一个变量时var_dump($frameChild->count)  
+    如果你这么做count的数据再下次reload时会被保留下来  
+    这里有个小小的体验改善，child的对象__get()不到数据时会自动向parent请求，所以：  
+    ```php
+    $frameParent->addChild($frameChild);
+    $frameParent->count=10;
+    echo $frameChild->count;
+    ```
+    会输出10。  
+  5.如果要在workerman中使用FrameChild按照以下步骤  
+    onWorkerStart()方法中添加以下代码  
+    ```php
+    /**
+  	 * 参与帧循环的root原件
+  	 *
+  	 * @var FrameChild
+  	 */
+  	 /**
+  	 * 帧频
+  	 *
+  	 * @var int
+  	 */
+  	public $frameRate = 0;
+  	public $frameRoot = null;
+    protected function onWorkerStart() {
+      $this->frameRoot = new FrameChild ();
+  		$this->frameRoot->__onAdded ( $this, false );
+  		// 如果使能了EnterFrame就启动Time
+  		if ($this->frameRate > 0) {
+  			Timer::add(0.5, array($this,'startFrameTimer'),array(),false);			
+  			if (isset ( $this->saveData ['@frameAutoSaveData'] )) {
+  				$this->frameRoot->loadData ( $this->saveData ['@frameAutoSaveData'] );
+  			}
+  		}		
+		｝
+		/**
+  	 * 启动frame定时器
+  	 */
+  	public function startFrameTimer(){
+  		Timer::add ( 1 / $this->frameRate, array (
+  				$this->frameRoot,
+  				'__onEnterFrame'
+  		) );
+  	}
+  	```
+  
+    
