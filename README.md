@@ -34,6 +34,7 @@ ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/wal
 #ChannelEventDispatcher
   用法与EventDispatcher一致，唯一注意的就是ChannelEventDispatcher是单例模式  
   ```php
+  ChannelEventDispatcher::$channelAddress='127.0.0.0:8081';//设置channel地址
   ChannelEventDispatcher::getChannelEventDispatcher()->addEventListener('event_changer',array($this,'onChangeListener'));
   ```
 #FrameChild
