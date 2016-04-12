@@ -37,6 +37,7 @@ ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/wal
   ChannelEventDispatcher::$channelAddress='127.0.0.0:8081';//设置channel地址
   ChannelEventDispatcher::getChannelEventDispatcher()->addEventListener('event_changer',array($this,'onChangeListener'));
   ```
+  进阶应用，获取Event后可以通过EventDispatcher继续派发下去，这样就完成了跨进程间和进程中的完整消息派发。  
 #FrameChild
   以下on方法继承时请override  
   onEnterFrame();每一帧都会触发  
