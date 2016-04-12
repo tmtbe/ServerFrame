@@ -85,8 +85,8 @@ ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/wal
   	 */
   	public $frameRate = 0;
   	public $frameRoot = null;
-    protected function onWorkerStart() {
-      $this->frameRoot = new FrameChild ();
+    	protected function onWorkerStart() {
+	 	$this->frameRoot = new FrameChild ();
   		$this->frameRoot->__onAdded ( $this, false );
   		// 如果使能了EnterFrame就启动Time
   		if ($this->frameRate > 0) {
@@ -105,6 +105,6 @@ ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/wal
   				'__onEnterFrame'
   		) );
   	}
-  	```
+     ```
   
     
