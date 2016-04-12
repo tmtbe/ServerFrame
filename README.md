@@ -1,31 +1,55 @@
 # ServerFrame
-基于workerman框架的帧扩展
-依赖php workerman框架 https://github.com/walkor/Workerman
-配合GatewayWorker框架使用起来更加方便 https://github.com/walkor/gatewayworker
-ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/walkor/channel
+基于workerman框架的帧扩展  
+依赖php workerman框架 https://github.com/walkor/Workerman  
+配合GatewayWorker框架使用起来更加方便 https://github.com/walkor/gatewayworker  
+ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/walkor/channel  
 #如何使用
 使用GatewayWorker框架时将文件复制到GatewayWorker目录下即可自动加载使用，没有使用GatewayWorker框架请参考GatewayWorker框架 
 
 #功能介绍
-  1.EventDispatcher 事件派发器，支持中断。用于管理事件的派发。
-  2.ChannelEventDispatcher 跨进程事件派发器，原理和EventDispatcher一样，结合Channel组件进行跨进程的事件派发。单例模式
-  3.FrameChild 帧处理组件，可嵌套，继承EventDispatcher，支持状态保留reload后恢复数据，自带回收重用，对象池模式。
-  4.Event 事件，EventDispatcher将派发Event事件，自带回收重用，对象池模式。
-  5.MyRedis Redis
-  6.RedisForDb Redis作为Db缓存的基本实现
-  7.Utils 工具类，目前仅提供uuid唯一id。
+  1.EventDispatcher 事件派发器，支持中断。用于管理事件的派发。  
+  2.ChannelEventDispatcher 跨进程事件派发器，原理和EventDispatcher一样，结合Channel组件进行跨进程的事件派发。单例模式  
+  3.FrameChild 帧处理组件，可嵌套，继承EventDispatcher，支持状态保留reload后恢复数据，自带回收重用，对象池模式。  
+  4.Event 事件，EventDispatcher将派发Event事件，自带回收重用，对象池模式。  
+  5.MyRedis Redis  
+  6.RedisForDb Redis作为Db缓存的基本实现  
+  7.Utils 工具类，目前仅提供uuid唯一id。  
   
 #EventDispatcher
-  addEventListener($type, $listener)添加事件侦听
-  removeEventListener($type, $listener)移除事件侦听
-  removeEventListeners($type = null)移除type类型或所有的事件侦听
-  dispatchEvent($event)派发事件
-  dispatchEventWith($type, $data = null)派发事件 Event使用对象池模式
-  注意addEventListener和removeEventListener请成对使用，避免内存溢出
-  事例：
-    addEventListener('event_changer',array($this,'onChangeListener'));
+  addEventListener($type, $listener)添加事件侦听  
+  removeEventListener($type, $listener)移除事件侦听  
+  removeEventListeners($type = null)移除type类型或所有的事件侦听  
+  dispatchEvent($event)派发事件  
+  dispatchEventWith($type, $data = null)派发事件 Event使用对象池模式  
+  注意addEventListener和removeEventListener请成对使用，避免内存溢出  
+  事例：  
+  ```php
+    mEventDispatcher->addEventListener('event_changer',array($this,'onChangeListener'));
     function onChangeListener(Event $event){
       var_dump($event->type);
       var_dump($event->data);
-      ....
+      ...
     }
+  ```
+#ChannelEventDispatcher
+  用法与EventDispatcher一致，唯一注意的就是ChannelEventDispatcher是单例模式  
+  ```php
+  ChannelEventDispatcher::getChannelEventDispatcher()->addEventListener('event_changer',array($this,'onChangeListener'));
+  ```
+#FrameChild
+  以下on方法继承时请override  
+  onEnterFrame();每一帧都会触发  
+  onAdded();每次被add都会触发，reload时不会触发  
+  onResume();每次被add和reload时都会触发，用于恢复状态  
+  onRemoved();每次被remove时都会触发，remove不会解除自身包含child的状态  
+  onDestory();销毁时会调用，并销毁所有的child  
+  addChild($frameChild, $key, $isReload = false) 往自身添加child，reload状态系统会调用，开发者不要赋值  
+  removeChild($key)移除子控件，触发子控件的onRemoved方法  
+  removeChilden()移除所有的子控件，触发所有child的onRemoved方法  
+  removeFromParent()从父级移除自己，触发自身onRemoved方法  
+  getChild($key)获取child  
+  destory()销毁触发所有child的onRemoved，onDestory方法  
+  getChildrenNum()获取child数量  
+  pushToMessage()插入消息列表，内部维护一个消息列表，reload不会丢失  
+  shiftFromMessage()取出消息  
+  shiftAllFromMessage()取出所有消息  
