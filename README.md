@@ -64,15 +64,15 @@ ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/wal
     当你需要取得一个变量时var_dump($frameChild->count)  
     如果你这么做count的数据再下次reload时会被保留下来  
     这里有个小小的体验改善，child的对象__get()不到数据时会自动向parent请求，所以：  
-    ```php
+  ```php
     $frameParent->addChild($frameChild);
     $frameParent->count=10;
     echo $frameChild->count;
-    ```
+  ```
     会输出10。  
   5.如果要在workerman中使用FrameChild按照以下步骤  
     onWorkerStart()方法中添加以下代码  
-    ```php
+  ```php
     /**
     * 参与帧循环的root原件
     *
@@ -105,6 +105,6 @@ ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/wal
   			'__onEnterFrame'
   	) );
     }
-    ```
+  ```
   
     
