@@ -74,37 +74,37 @@ ChannelEventDispatcher 依赖Channel分布式通讯组件 https://github.com/wal
     onWorkerStart()方法中添加以下代码  
     ```php
     /**
-  	 * 参与帧循环的root原件
-  	 *
-  	 * @var FrameChild
-  	 */
-  	 /**
-  	 * 帧频
-  	 *
-  	 * @var int
-  	 */
-  	public $frameRate = 0;
-  	public $frameRoot = null;
-    	protected function onWorkerStart() {
-	 	$this->frameRoot = new FrameChild ();
-  		$this->frameRoot->__onAdded ( $this, false );
-  		// 如果使能了EnterFrame就启动Time
-  		if ($this->frameRate > 0) {
-  			Timer::add(0.5, array($this,'startFrameTimer'),array(),false);			
-  			if (isset ( $this->saveData ['@frameAutoSaveData'] )) {
-  				$this->frameRoot->loadData ( $this->saveData ['@frameAutoSaveData'] );
-  			}
-  		}		
-		｝
-		/**
-  	 * 启动frame定时器
-  	 */
-  	public function startFrameTimer(){
-  		Timer::add ( 1 / $this->frameRate, array (
-  				$this->frameRoot,
-  				'__onEnterFrame'
-  		) );
-  	}
-     ```
+    * 参与帧循环的root原件
+    *
+    * @var FrameChild
+    */
+    /**
+    * 帧频
+    *
+    * @var int
+    */
+    public $frameRate = 0;
+    public $frameRoot = null;
+    protected function onWorkerStart() {
+ 	$this->frameRoot = new FrameChild ();
+  	$this->frameRoot->__onAdded ( $this, false );
+  	// 如果使能了EnterFrame就启动Time
+  	if ($this->frameRate > 0) {
+  		Timer::add(0.5, array($this,'startFrameTimer'),array(),false);			
+  		if (isset ( $this->saveData ['@frameAutoSaveData'] )) {
+  			$this->frameRoot->loadData ( $this->saveData ['@frameAutoSaveData'] );
+  		}
+  	}		
+	｝
+    /**
+    * 启动frame定时器
+    */
+    public function startFrameTimer(){
+  	Timer::add ( 1 / $this->frameRate, array (
+  			$this->frameRoot,
+  			'__onEnterFrame'
+  	) );
+    }
+    ```
   
     
